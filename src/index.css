@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 213 54% 16%;
+    --card: 0 0% 100%;
+    --card-foreground: 102 23% 23%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 102 23% 23%;
+    --primary: 102 23% 23%; /* Dark Olive #36492e */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 213 54% 16%; /* Dark Navy #13273f */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 15 37% 86%; /* Soft Peach #e9d4cd */
+    --muted-foreground: 102 23% 23%; 
+    --accent: 0 100% 15%; /* Dark Maroon #4e0000 */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 15 37% 86%; 
+    --input: 15 37% 86%;
+    --ring: 102 23% 23%;
+    --radius: 0.75rem;
+
+    /* Sidebar Variables */
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 102 23% 23%;
+    --sidebar-primary: 102 23% 23%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 15 37% 86%;
+    --sidebar-accent-foreground: 102 23% 23%;
+    --sidebar-border: 15 37% 86%;
+    --sidebar-ring: 102 23% 23%;
+  }
+
+  .dark {
+    --background: 102 23% 15%; 
+    --foreground: 0 0% 100%;
+    --card: 102 23% 15%;
+    --card-foreground: 0 0% 100%;
+    --popover: 102 23% 15%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 102 23% 23%;
+    --secondary: 213 54% 16%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 102 23% 25%;
+    --muted-foreground: 15 37% 86%;
+    --accent: 0 100% 15%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 102 23% 25%;
+    --input: 102 23% 25%;
+    --ring: 15 37% 86%;
+
+    /* Sidebar Variables */
+    --sidebar: 102 23% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 102 23% 23%;
+    --sidebar-accent: 102 23% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 102 23% 25%;
+    --sidebar-ring: 15 37% 86%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground bg-fixed bg-center bg-cover bg-no-repeat;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/40 backdrop-blur-md border border-white/20 shadow-lg;
+  }
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-lg;
+  }
+  .glass-primary {
+    @apply bg-[hsl(102_23%_23%)]/80 backdrop-blur-lg border border-[hsl(213_54%_16%)]/50 shadow-xl text-white;
+  }
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .dark .glass {
+    @apply bg-[hsl(102_23%_15%)]/60 backdrop-blur-md border border-white/5 shadow-lg;
+  }
+  .dark .glass-card {
+    @apply bg-[hsl(213_54%_16%)]/30 backdrop-blur-xl border border-white/10 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+}
