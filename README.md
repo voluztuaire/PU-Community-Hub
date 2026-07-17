@@ -1,53 +1,53 @@
-# 🎓 PU Community Hub
+# PU Community Hub
 
-PU Community Hub is a futuristic, all-in-one student hub designed for President University. It connects students across faculties and majors, empowering them with study groups, real-time communication, AI-powered learning tools, and community forums.
+PU Community Hub is a comprehensive web application designed for students at President University. It serves as a centralized platform for academic collaboration, social engagement, and personal organization.
 
----
+## Key Features
 
-## ✨ Features
+- Smart Study Groups: Create or join study groups tailored to specific faculties and majors.
+- Real-Time Communication: Participate in live discussions within study groups. Features include image uploads, voice recordings, message replies, and un-sending capabilities.
+- AI-Powered Learning Assistant: Upload academic materials, documents, or lecture slides (Images/PDFs) to instantly generate comprehensive summaries, flashcards, and Q&A sessions powered by Groq's Llama 3 Vision AI model.
+- Interactive Q&A Forum: Ask questions publicly or anonymously, attach media, and upvote the most helpful answers.
+- Community Bulletin: Share announcements, tips, and general posts with the entire campus community.
+- Personal Calendar: Keep track of academic assignments, group meetings, and personal tasks in a fully functional calendar system.
 
-- **📚 Smart Study Groups**: Join or create study groups based on your specific Faculty and Major.
-- **💬 Real-Time Chat**: Engage in live discussions within study groups. Supports image uploads, voice recordings, replying to specific messages, and message un-sending.
-- **🤖 AI Summaries (Groq Vision)**: Upload course materials or lecture slides (images/PDFs) and instantly get comprehensive topic breakdowns, flashcards, and Q&A powered by Groq's blazing-fast Llama 3 Vision AI model.
-- **🗣️ Q&A Forum**: Ask questions (publicly or anonymously), attach images, and upvote the best answers. Includes AI translation capabilities.
-- **🌐 Community Posts**: Share announcements, tips, or general thoughts with the entire campus.
-- **📅 Interactive Calendar & Events**: Keep track of assignments, study group meetings, and campus-wide events in a unified calendar.
-
----
-
-## 🛠️ Tech Stack
+## Technology Stack
 
 **Frontend:**
 - React (Vite)
 - TypeScript
-- Tailwind CSS (Glassmorphism UI)
-- Framer Motion (Animations)
-- Zustand (State Management)
+- Tailwind CSS
+- Framer Motion
+- Zustand
 
 **Backend:**
 - Python (FastAPI)
-- Groq AI API (LLM & Vision)
+- Groq AI API
 - Supabase (PostgreSQL, Authentication, Storage, Real-time WebSockets)
 
----
+## Getting Started
 
-## 🚀 Getting Started
-
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing.
+Follow these instructions to set up the project locally.
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [Python](https://www.python.org/) (3.9 or higher)
-- A [Supabase](https://supabase.com/) account
-- A [Groq](https://console.groq.com/) API Key
+- Node.js (v18 or higher)
+- Python (3.9 or higher)
+- A Supabase account
+- A Groq API Key
 
-### 1. Clone the repository
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/voluztuaire/PU-Community-Hub.git
 cd PU-Community-Hub
 ```
 
-### 2. Frontend Setup (React/Vite)
+### 2. Database Setup
+To configure the Supabase database, execute the SQL scripts provided in the `supabase/` directory via the Supabase SQL Editor:
+- Run `01_study_groups_schema_update.sql` to apply the base schema.
+- Run `02_dummy_data_insertion.sql` to populate the application with initial testing data.
+- Run `03_events_schema_update.sql` to apply the latest event updates.
+
+### 3. Frontend Configuration
 1. Install Node dependencies:
    ```bash
    npm install
@@ -58,18 +58,18 @@ cd PU-Community-Hub
    VITE_SUPABASE_ANON_KEY=your-supabase-anon-key-here
    ```
 
-### 3. Backend Setup (Python/FastAPI)
+### 4. Backend Configuration
 1. Navigate to the backend directory:
    ```bash
    cd backend
    ```
 2. Create and activate a Python virtual environment:
-   - **Windows:**
+   - For Windows:
      ```bash
      python -m venv venv
      .\venv\Scripts\activate
      ```
-   - **Mac/Linux:**
+   - For Mac/Linux:
      ```bash
      python3 -m venv venv
      source venv/bin/activate
@@ -78,38 +78,28 @@ cd PU-Community-Hub
    ```bash
    pip install -r requirements.txt
    ```
-4. Rename `backend/.env.example` to `backend/.env` and add your Groq API key and Supabase credentials:
+4. Rename `backend/.env.example` to `backend/.env` and insert your API keys:
    ```env
    GROQ_API_KEY=your-groq-api-key-here
    VITE_SUPABASE_URL=https://your-supabase-url.supabase.co
    VITE_SUPABASE_ANON_KEY=your-supabase-anon-key-here
    ```
 
----
+## Running the Application
 
-## 💻 Running the App Locally
+You must run the backend server and the frontend development server simultaneously in two separate terminal windows.
 
-You will need two separate terminal windows to run both the frontend and the backend simultaneously.
-
-### Start the Backend (Terminal 1)
+### Terminal 1: Start the Backend
 ```bash
 cd backend
-# Make sure your virtual environment is activated
+# Ensure the virtual environment is activated
 uvicorn main:app --reload --port 8000
 ```
 
-### Start the Frontend (Terminal 2)
+### Terminal 2: Start the Frontend
 ```bash
-# From the root directory of the project
+# Ensure you are in the root directory
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser to view the application.
-
----
-
-## 🗄️ Database Setup
-
-If you are setting up your own Supabase project from scratch, use the SQL scripts provided in the `supabase/` directory to build the required tables and insert dummy data.
-- Run `01_study_groups_schema_update.sql` first.
-- Run `02_dummy_data_insertion.sql` to populate the app for testing.
+Finally, open `http://localhost:5173` in your web browser to view the application.
