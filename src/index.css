@@ -62,14 +62,14 @@
     --radius: 0.75rem;
 
     /* Sidebar Variables */
-    --sidebar: 0 0% 100%;
-    --sidebar-foreground: 102 23% 23%;
-    --sidebar-primary: 102 23% 23%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 15 37% 86%;
-    --sidebar-accent-foreground: 102 23% 23%;
-    --sidebar-border: 15 37% 86%;
-    --sidebar-ring: 102 23% 23%;
+    --sidebar: 213 54% 16%; /* #13273f */
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 213 54% 16%;
+    --sidebar-accent: 213 54% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 213 54% 16%;
+    --sidebar-ring: 213 54% 16%;
   }
 
   .dark {

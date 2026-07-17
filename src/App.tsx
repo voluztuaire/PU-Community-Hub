@@ -12,6 +12,7 @@ import AISummary from "@/pages/AISummary";
 import EventsPage from "@/pages/EventsPage";
 import CalendarPage from "@/pages/CalendarPage";
 import ProfilePage from "@/pages/ProfilePage";
+import AdminDashboard from "@/pages/AdminDashboard";
 import StudyGroupChat from "@/pages/StudyGroupChat";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="ai-summary" element={<AISummary />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="admin" element={<AdminDashboard />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

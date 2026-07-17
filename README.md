@@ -1,6 +1,6 @@
-# 🎓 Academic Compass
+# 🎓 PU Community Hub
 
-Academic Compass is a futuristic, all-in-one student hub designed for President University. It connects students across faculties and majors, empowering them with study groups, real-time communication, AI-powered learning tools, and community forums.
+PU Community Hub is a futuristic, all-in-one student hub designed for President University. It connects students across faculties and majors, empowering them with study groups, real-time communication, AI-powered learning tools, and community forums.
 
 ---
 

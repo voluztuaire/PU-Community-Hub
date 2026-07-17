@@ -2,12 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, Send, ArrowLeft, Image as ImageIcon, Mic, X, Paperclip, Reply } from "lucide-react";
+import { Loader2, Send, ArrowLeft, Image as ImageIcon, Mic, X, Paperclip, Reply, Info, Users, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 
 export default function StudyGroupChat() {
   const { id: groupId } = useParams();
@@ -16,6 +17,7 @@ export default function StudyGroupChat() {
   
   const [group, setGroup] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [inputText, setInputText] = useState("");
@@ -41,6 +43,9 @@ export default function StudyGroupChat() {
         return;
       }
       setGroup(g);
+      
+      const { data: m } = await supabase.from("study_group_members").select("role, users(full_name, avatar_url, email)").eq("group_id", groupId);
+      if (m) setMembers(m);
       
       await loadMessages();
       setLoading(false);
@@ -194,14 +199,69 @@ export default function StudyGroupChat() {
   return (
     <div className="flex flex-col h-[calc(100vh-12rem)] bg-white/50 backdrop-blur-md rounded-2xl border border-white/40 overflow-hidden">
       {/* Header */}
-      <div className="h-16 border-b border-white/20 bg-white/40 flex items-center px-4 gap-4 shrink-0 shadow-sm z-10">
+      <div className="bg-white/80 backdrop-blur-sm p-4 flex items-center gap-3 border-b border-white/20 shadow-sm shrink-0">
         <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard/study-groups")}>
-          <ArrowLeft className="w-5 h-5 text-[#36492e]" />
+          <ArrowLeft className="w-5 h-5" />
         </Button>
-        <div>
-          <h2 className="font-bold text-[#13273f] text-lg">{group?.name}</h2>
-          <p className="text-xs text-[#36492e]/70">{group?.course_name}</p>
+        <div className="flex-1 min-w-0">
+          <h2 className="font-bold text-[#13273f] text-lg truncate">{group?.name}</h2>
+          <p className="text-xs text-[#36492e]/70 truncate">{group?.course_name}</p>
         </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" title="Group Info">
+              <Info className="w-5 h-5 text-[#13273f]" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl text-[#13273f]">{group?.name}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Course</p>
+                <p className="text-sm font-medium">{group?.course_name}</p>
+              </div>
+              {group?.description && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Description</p>
+                  <p className="text-sm text-foreground/90">{group.description}</p>
+                </div>
+              )}
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
+                  <Users className="w-3 h-3" /> Members ({members.length})
+                </p>
+                <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
+                  {members.map((m, i) => (
+                    <div key={i} className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 shrink-0 overflow-hidden">
+                          {m.users?.avatar_url ? (
+                            <img src={m.users.avatar_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-xs text-primary font-bold">
+                              {m.users?.full_name?.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{m.users?.full_name}</p>
+                          <p className="text-xs text-muted-foreground truncate">{m.users?.email}</p>
+                        </div>
+                      </div>
+                      {m.role === "owner" && (
+                        <div className="flex items-center gap-1 shrink-0 text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md text-[10px] font-semibold">
+                          <Shield className="w-3 h-3" /> Admin
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Chat Area */}
@@ -253,7 +313,7 @@ export default function StudyGroupChat() {
                     </div>
                   </div>
                   <span className="text-[10px] text-muted-foreground mt-1 px-1">
-                    {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
+                    {format(new Date(msg.created_at), "MMM d, HH:mm")}
                   </span>
                 </div>
               </div>

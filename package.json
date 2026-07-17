@@ -1,5 +1,5 @@
 {
-  "name": "academic-compass",
+  "name": "pu-community-hub",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -56,6 +56,7 @@
     "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.81.0",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.12.2",
     "react-router-dom": "^7.18.1",
     "recharts": "^3.8.0",

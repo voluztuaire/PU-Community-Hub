@@ -9,7 +9,8 @@ from groq import Groq
 from pydantic import BaseModel
 from typing import List
 import re
-from pypdf import PdfReader
+import fitz
+import json
 
 load_dotenv()
 
@@ -32,16 +33,39 @@ class FAQ(BaseModel):
 def preprocess_text(text: str) -> str:
     return re.sub(r'\s+', ' ', text.strip())
 
-# ====================== EXTRACT TEXT DARI PDF (text-based) ======================
-def extract_text_from_pdf(file_bytes: bytes) -> str:
-    try:
-        reader = PdfReader(file_bytes)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text() or ""
-        return text.strip()
-    except:
-        return ""
+def parse_json_response(result: str):
+    result = result.strip()
+    if result.startswith("```json"):
+        result = result[7:]
+    if result.startswith("```"):
+        result = result[3:]
+    if result.endswith("```"):
+        result = result[:-3]
+    return json.loads(result.strip())
+
+# ====================== EXTRACT TEXT ATAU IMAGE DARI PDF ======================
+async def process_pdf(file_bytes: bytes, filename: str):
+    doc = fitz.open(stream=file_bytes, filetype="pdf")
+    text = ""
+    for page in doc:
+        text += page.get_text() or ""
+    
+    text = text.strip()
+    alpha_chars = sum(c.isalpha() for c in text)
+    
+    is_scanned = False
+    if len(text) < 300 or alpha_chars < 200:
+        is_scanned = True
+    elif len(text) > 0 and (alpha_chars / len(text)) < 0.5:
+        is_scanned = True
+
+    if is_scanned:
+        page = doc.load_page(0)
+        pix = page.get_pixmap() # Pakai resolusi standar agar lebih cepat
+        img_bytes = pix.tobytes("jpeg") # Pakai JPEG supaya sizenya jauh lebih kecil (bisa 10x lipat lebih cepat loadingnya)
+        return await process_with_vision(img_bytes, "image/jpeg", filename)
+    else:
+        return await process_with_text(text)
 
 # ====================== PROCESS DENGAN VISION (untuk Image) ======================
 async def process_with_vision(file_bytes: bytes, mime_type: str, filename: str):
@@ -68,7 +92,7 @@ Return ONLY valid JSON:
 
     try:
         completion = client.chat.completions.create(
-            model="meta-llama/llama-4-scout-17b-16e-instruct",   # â† GANTI JADI INI
+            model="llama-3.2-11b-vision-preview",
             messages=[
                 {
                     "role": "user",
@@ -83,7 +107,7 @@ Return ONLY valid JSON:
             response_format={"type": "json_object"}
         )
         result = completion.choices[0].message.content
-        return eval(result) if isinstance(result, str) else result
+        return parse_json_response(result) if isinstance(result, str) else result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Vision processing failed: {str(e)}")
 
@@ -91,6 +115,9 @@ Return ONLY valid JSON:
 async def process_with_text(content: str):
     if len(content.strip()) < 50:
         raise HTTPException(status_code=400, detail="Content too short")
+
+    # Potong text maksimal ~15,000 karakter agar tidak kena limit 6000 TPM Groq Free Tier
+    content = content[:15000]
 
     system_prompt = """
 You are an expert academic assistant for university students.
@@ -115,7 +142,7 @@ Return ONLY valid JSON with keys: "summary", "topics", "faqs"
             response_format={"type": "json_object"}
         )
         result = completion.choices[0].message.content
-        return eval(result) if isinstance(result, str) else result
+        return parse_json_response(result) if isinstance(result, str) else result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
 
@@ -131,24 +158,12 @@ async def ai_summary(text: str = Form(None), file: UploadFile = File(None)):
             filename = file.filename.lower()
 
             if file.content_type.startswith("image/"):
-                # Image â†’ pakai Vision
                 result = await process_with_vision(file_bytes, file.content_type, filename)
             elif filename.endswith(".pdf"):
-                # PDF â†’ coba extract text dulu
-                extracted = extract_text_from_pdf(file_bytes)
-                if extracted and len(extracted) > 20:
-                    result = await process_with_text(extracted)
-                else:
-                    # Fallback for scanned PDFs
-                    result = {
-                        "summary": "This appears to be a scanned PDF or contains very little extractable text. Full OCR processing is required for a complete analysis.",
-                        "topics": ["Scanned Document", "Needs OCR"],
-                        "faqs": [{"question": "Why is the summary short?", "answer": "The uploaded PDF does not contain selectable text (it is a scanned image). Please upload a text-based PDF or an image file (JPG/PNG) to use the vision processing."}]
-                    }
+                result = await process_pdf(file_bytes, filename)
             else:
                 raise HTTPException(status_code=400, detail="Only PDF and images (jpg, png, webp) supported")
         else:
-            # Text only
             content = preprocess_text(text)
             result = await process_with_text(content)
 

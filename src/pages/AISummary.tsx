@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Upload, FileText } from "lucide-react";
+import { Loader2, Upload, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function AISummary() {
@@ -42,7 +42,7 @@ export default function AISummary() {
         <p className="text-[#13273f]/60 text-base">Upload a document or paste text to generate an academic summary.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="flex flex-col gap-8">
         <Card className="glass-card border-[#e9d4cd]">
           <CardHeader>
             <CardTitle className="text-xl text-[#13273f]">Input Content</CardTitle>
@@ -73,9 +73,27 @@ export default function AISummary() {
                   accept=".pdf,image/*"
                 />
                 <Upload className="w-8 h-8 text-[#13273f]/40 mb-2" />
-                <p className="text-sm text-[#13273f]/60">
-                  {file ? file.name : "Click or drag file to upload"}
-                </p>
+                {file ? (
+                  <div className="flex items-center gap-2 mt-2 z-10 relative">
+                    <p className="text-sm text-[#13273f] font-medium">{file.name}</p>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setFile(null);
+                        // Also reset the file input value so we can upload the same file again if needed
+                        const fileInput = e.currentTarget.closest('.border-dashed')?.querySelector('input[type="file"]') as HTMLInputElement;
+                        if (fileInput) fileInput.value = '';
+                      }}
+                      className="p-1 hover:bg-red-100 rounded-full text-red-500 transition-colors"
+                      title="Remove file"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[#13273f]/60 mt-2">Click or drag file to upload</p>
+                )}
               </div>
             </div>
             <Button 
@@ -97,33 +115,73 @@ export default function AISummary() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h3 className="font-bold text-[#13273f] mb-2">Summary</h3>
-                  <p className="text-sm text-[#13273f]/80 whitespace-pre-wrap">{result.summary}</p>
+                  <h3 className="font-bold text-[#13273f] mb-3">Summary</h3>
+                  {(() => {
+                    if (typeof result.summary === 'string') {
+                      return <p className="text-sm text-[#13273f]/80 whitespace-pre-wrap leading-relaxed">{result.summary}</p>;
+                    }
+                    if (typeof result.summary === 'object' && result.summary !== null) {
+                      const textContent = result.summary.text || result.summary.summary || result.summary.content || result.summary.description;
+                      if (textContent && typeof textContent === 'string') {
+                        return <p className="text-sm text-[#13273f]/80 whitespace-pre-wrap leading-relaxed">{textContent}</p>;
+                      }
+                      return (
+                        <ul className="list-disc pl-5 space-y-3 text-sm text-[#13273f]/80">
+                          {Object.entries(result.summary).map(([key, value]) => (
+                            <li key={key}>
+                              <strong className="text-[#13273f] capitalize">{key.replace(/_/g, ' ')}:</strong> {String(value)}
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
                 
-                {result.topics && result.topics.length > 0 && (
+                {Array.isArray(result.topics) && result.topics.length > 0 && (
                   <div>
                     <h3 className="font-bold text-[#13273f] mb-2">Key Topics</h3>
                     <div className="flex flex-wrap gap-2">
-                      {result.topics.map((t: string, i: number) => (
-                        <span key={i} className="bg-[#e9d4cd]/50 text-[#13273f] text-xs px-2 py-1 rounded-md">
-                          {t}
-                        </span>
-                      ))}
+                      {result.topics.map((t: any, i: number) => {
+                        let topicName = t;
+                        let topicDesc = "";
+                        if (typeof t === 'object' && t !== null) {
+                          topicName = t.name || t.topic || t.title || Object.values(t)[0];
+                          topicDesc = t.description || t.detail || t.summary || "";
+                        }
+                        return (
+                          <span 
+                            key={i} 
+                            className="bg-[#e9d4cd]/50 text-[#13273f] text-xs px-3 py-1.5 rounded-md font-medium"
+                            title={topicDesc}
+                          >
+                            {typeof topicName === 'string' ? topicName : JSON.stringify(topicName)}
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
                 
-                {result.faqs && result.faqs.length > 0 && (
+                {Array.isArray(result.faqs) && result.faqs.length > 0 && (
                   <div>
                     <h3 className="font-bold text-[#13273f] mb-2">FAQs</h3>
                     <div className="space-y-3">
-                      {result.faqs.map((faq: any, i: number) => (
-                        <div key={i} className="bg-[#13273f]/5 rounded-lg p-3">
-                          <p className="font-semibold text-sm text-[#13273f] mb-1">Q: {faq.question}</p>
-                          <p className="text-sm text-[#13273f]/80">A: {faq.answer}</p>
-                        </div>
-                      ))}
+                      {result.faqs.map((faq: any, i: number) => {
+                        let q = faq?.question || faq?.q;
+                        let a = faq?.answer || faq?.a;
+                        if (!q && typeof faq === 'object' && faq !== null) {
+                          q = Object.keys(faq)[0];
+                          a = Object.values(faq)[0];
+                        }
+                        return (
+                          <div key={i} className="bg-[#13273f]/5 rounded-lg p-4">
+                            <p className="font-semibold text-sm text-[#13273f] mb-1">Q: {String(q || "No question")}</p>
+                            <p className="text-sm text-[#13273f]/80">A: {String(a || "No answer")}</p>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

@@ -14,6 +14,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [studentId, setStudentId] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   
@@ -69,6 +70,7 @@ export default function Login() {
             id: data.user.id,
             email: data.user.email,
             full_name: fullName,
+            student_id: studentId,
             faculty_id: selectedFaculty,
             major_id: selectedMajor,
             role: 'student'
@@ -85,40 +87,7 @@ export default function Login() {
     setLoading(false);
   };
 
-  const handleDemo = async (role: "student" | "admin") => {
-    setLoading(true);
-    const demoEmail = role === "admin" ? "demoadmin@student.president.ac.id" : "demostudent@student.president.ac.id";
-    const demoPass = "password123";
-    
-    // Attempt sign in
-    const { error } = await supabase.auth.signInWithPassword({ email: demoEmail, password: demoPass });
-    
-    if (error) {
-       toast.info(`Creating ${role} demo account...`);
-       const { data, error: signUpError } = await supabase.auth.signUp({ email: demoEmail, password: demoPass });
-       if (signUpError) {
-         toast.error("Failed to create demo account: " + signUpError.message);
-       } else if (data.user) {
-         await supabase.from('users').insert({
-           id: data.user.id,
-           email: data.user.email,
-           role: role,
-           full_name: role === "admin" ? "Demo Admin" : "Demo Student"
-         });
-         toast.success("Demo account created! Logging in...");
-         
-         const { error: signInErr } = await supabase.auth.signInWithPassword({ email: demoEmail, password: demoPass });
-         if (!signInErr) {
-           navigate("/dashboard");
-         } else {
-           toast.error(signInErr.message);
-         }
-       }
-    } else {
-      navigate("/dashboard");
-    }
-    setLoading(false);
-  };
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
@@ -144,23 +113,36 @@ export default function Login() {
               {isSignUp ? "Create an Account" : "Welcome Back"}
             </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              {isSignUp ? "Register to access Academic Compass" : "Sign in to your Academic Compass account"}
+              {isSignUp ? "Register to access PU Community Hub" : "Sign in to your PU Community Hub account"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleAuth} className="space-y-4">
               
               {isSignUp && (
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input 
-                    id="fullName" 
-                    value={fullName}
-                    onChange={e => setFullName(e.target.value)}
-                    placeholder="John Doe" 
-                    required 
-                    className="bg-white/50 border-white/40 focus-visible:ring-primary/50"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input 
+                      id="fullName" 
+                      value={fullName}
+                      onChange={e => setFullName(e.target.value)}
+                      placeholder="e.g., John Doe" 
+                      required 
+                      className="bg-white/50 border-white/40 focus-visible:ring-primary/50 placeholder:text-[#36492e]/40"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="studentId">Student ID</Label>
+                    <Input 
+                      id="studentId" 
+                      value={studentId}
+                      onChange={e => setStudentId(e.target.value)}
+                      placeholder="e.g., 001202300001" 
+                      required 
+                      className="bg-white/50 border-white/40 focus-visible:ring-primary/50 placeholder:text-[#36492e]/40"
+                    />
+                  </div>
                 </div>
               )}
 
@@ -171,9 +153,9 @@ export default function Login() {
                   type="email" 
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="name@student.president.ac.id" 
+                  placeholder="e.g., name@student.president.ac.id" 
                   required 
-                  className="bg-white/50 border-white/40 focus-visible:ring-primary/50"
+                  className="bg-white/50 border-white/40 focus-visible:ring-primary/50 placeholder:text-[#36492e]/40"
                 />
               </div>
 
@@ -182,9 +164,9 @@ export default function Login() {
                   <div className="space-y-2">
                     <Label>Faculty</Label>
                     <Select value={selectedFaculty} onValueChange={setSelectedFaculty}>
-                      <SelectTrigger className="w-full bg-white/50 border-white/40 focus-visible:ring-primary/50">
-                        <SelectValue placeholder="Select your faculty">
-                          {faculties.find(f => f.id === selectedFaculty)?.name || "Select your faculty"}
+                      <SelectTrigger className="w-full bg-white/50 border-white/40 focus-visible:ring-primary/50 text-left">
+                        <SelectValue placeholder="e.g., Select your faculty">
+                          {faculties.find(f => f.id === selectedFaculty)?.name || <span className="text-[#36492e]/40">e.g., Select your faculty</span>}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
@@ -198,9 +180,9 @@ export default function Login() {
                   <div className="space-y-2">
                     <Label>Major</Label>
                     <Select value={selectedMajor} onValueChange={setSelectedMajor} disabled={!selectedFaculty || majors.length === 0}>
-                      <SelectTrigger className="w-full bg-white/50 border-white/40 focus-visible:ring-primary/50">
-                        <SelectValue placeholder={selectedFaculty ? "Select your major" : "Select faculty first"}>
-                          {majors.find(m => m.id === selectedMajor)?.name || (selectedFaculty ? "Select your major" : "Select faculty first")}
+                      <SelectTrigger className="w-full bg-white/50 border-white/40 focus-visible:ring-primary/50 text-left">
+                        <SelectValue placeholder={selectedFaculty ? "e.g., Select your major" : "e.g., Select faculty first"}>
+                          {majors.find(m => m.id === selectedMajor)?.name || <span className="text-[#36492e]/40">{selectedFaculty ? "e.g., Select your major" : "e.g., Select faculty first"}</span>}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
@@ -220,8 +202,9 @@ export default function Login() {
                   type="password" 
                   value={password}
                   onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
                   required 
-                  className="bg-white/50 border-white/40 focus-visible:ring-primary/50"
+                  className="bg-white/50 border-white/40 focus-visible:ring-primary/50 placeholder:text-[#36492e]/40"
                 />
               </div>
               <Button type="submit" className="w-full bg-primary hover:bg-secondary text-white shadow-md rounded-xl h-11" disabled={loading}>
@@ -239,25 +222,6 @@ export default function Login() {
               </button>
             </div>
 
-            <div className="relative mt-4">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/30" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background/80 backdrop-blur px-2 text-muted-foreground rounded-full">
-                  Or try demo accounts
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <Button variant="outline" type="button" onClick={() => handleDemo("student")} disabled={loading} className="glass border-white/30 hover:bg-white/40 text-foreground">
-                Student Demo
-              </Button>
-              <Button variant="outline" type="button" onClick={() => handleDemo("admin")} disabled={loading} className="glass border-white/30 hover:bg-white/40 text-foreground">
-                Admin Demo
-              </Button>
-            </div>
           </CardContent>
         </Card>
       </motion.div>

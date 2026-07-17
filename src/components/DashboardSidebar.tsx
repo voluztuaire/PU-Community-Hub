@@ -44,7 +44,7 @@ export function DashboardSidebar() {
               <div className="p-2 bg-white rounded-xl shadow-lg flex-shrink-0">
                 <GraduationCap className="w-6 h-6 text-primary" />
               </div>
-              {!collapsed && <span className="font-bold text-white tracking-tight text-lg drop-shadow-sm">Academic Compass</span>}
+              {!collapsed && <span className="font-bold text-white tracking-tight text-lg drop-shadow-sm">PU Community Hub</span>}
             </div>
           </SidebarGroupLabel>
           <SidebarGroupContent>

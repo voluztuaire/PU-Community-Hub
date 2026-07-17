@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import Markdown from "react-markdown";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Session = { id: string; title: string; updated_at: string };
@@ -22,10 +23,11 @@ export const AIChatbot = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [currentSession, setCurrentSession] = useState<string | null>(null);
+  const [contextStr, setContextStr] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
+    setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
   }, [messages, open]);
 
   const loadSessions = async () => {
@@ -35,7 +37,16 @@ export const AIChatbot = () => {
     setSessions((data ?? []) as any);
   };
 
-  useEffect(() => { if (open) loadSessions(); }, [open, user]);
+  const loadContext = async () => {
+    try {
+      const { data: groups } = await supabase.from("study_groups").select("name, course_name").limit(10);
+      const { data: events } = await supabase.from("events").select("title, event_date, status").limit(10);
+      const str = `[System Context: Active Study Groups on PU Community Hub: ${(groups || []).map(g => g.name).join(", ") || 'none'}. Upcoming Events: ${(events || []).map(e => e.title).join(", ") || 'none'}. Use this context to answer user questions accurately.]`;
+      setContextStr(str);
+    } catch(e) {}
+  };
+
+  useEffect(() => { if (open) { loadSessions(); loadContext(); } }, [open, user]);
 
   const loadSession = async (id: string) => {
     const { data } = await supabase.from("chatbot_messages").select("role, content")
@@ -86,10 +97,15 @@ export const AIChatbot = () => {
       // Save user message
       await supabase.from("chatbot_messages").insert({ session_id: sid!, user_id: user.id, role: "user", content: text });
 
+      const payloadMessages = [...next];
+      if (payloadMessages.length > 0 && contextStr) {
+        payloadMessages[0] = { ...payloadMessages[0], content: `${payloadMessages[0].content}\n\n${contextStr}` };
+      }
+
       const res = await fetch("http://127.0.0.1:8000/ai-chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next })
+        body: JSON.stringify({ messages: payloadMessages })
       });
       if (!res.ok) throw new Error("Chatbot API failed");
       const data = await res.json();
@@ -162,12 +178,20 @@ export const AIChatbot = () => {
               )}
             </ScrollArea>
           ) : (
-            <ScrollArea className="flex-1 p-3" ref={scrollRef as any}>
-              <div ref={scrollRef} className="space-y-3 max-h-full overflow-y-auto">
+            <ScrollArea className="flex-1 min-h-0 p-3">
+              <div className="space-y-3 pb-2">
                 {messages.map((m, i) => (
                   <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap shadow-sm ${m.role === "user" ? "bg-primary text-white rounded-br-sm bg-gradient-to-br from-[#132041] to-[#193656]" : "bg-white/60 text-foreground rounded-bl-sm border border-white/40"}`}>
-                      {m.content}
+                      {m.role === "user" ? (
+                        m.content
+                      ) : (
+                        <div className="markdown-content space-y-2 [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5 [&_strong]:font-bold [&_em]:italic">
+                          <Markdown>
+                            {m.content}
+                          </Markdown>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -180,6 +204,7 @@ export const AIChatbot = () => {
                     </div>
                   </div>
                 )}
+                <div ref={scrollRef} />
               </div>
             </ScrollArea>
           )}

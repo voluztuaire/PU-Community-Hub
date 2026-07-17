@@ -5,114 +5,140 @@ import { motion } from "framer-motion";
 
 export default function Index() {
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Futuristic Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div className="absolute -top-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute top-[40%] -left-[10%] w-[40%] h-[40%] rounded-full bg-accent/5 blur-3xl" />
-      </div>
-
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b-0 border-white/10 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-slate-50 relative">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-primary to-secondary rounded-lg shadow-lg">
-            <GraduationCap className="w-6 h-6 text-white" />
+          <div className="p-2 bg-[#13273f] rounded-lg shadow-md">
+            <GraduationCap className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-xl text-primary tracking-tight">Academic Compass</span>
+          <span className="font-bold text-lg text-[#13273f] tracking-tight">PU Community Hub</span>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" asChild className="text-foreground hover:bg-white/20">
+          <Button variant="ghost" asChild className="text-gray-600 hover:text-[#13273f] hover:bg-gray-100">
             <Link to="/login">Sign In</Link>
           </Button>
-          <Button asChild className="bg-primary hover:bg-secondary text-white shadow-lg">
+          <Button asChild className="bg-[#13273f] hover:bg-[#13273f]/90 text-white shadow-md transition-all rounded-full px-6 font-semibold">
             <Link to="/login">Get Started</Link>
           </Button>
         </div>
       </nav>
 
-      <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
-        <div className="flex flex-col items-center text-center space-y-8 mt-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-white/30 text-sm font-medium text-primary shadow-sm"
-          >
-            <Sparkles className="w-4 h-4 text-accent" />
-            <span>Empowering Your Academic Journey</span>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent"
-          >
-            Navigate Your Campus <br /> Like a Pro.
-          </motion.h1>
-
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl"
-          >
-            Join study groups, discover events, ask questions, and get AI-powered summaries of your course materials—all in one seamless, futuristic hub.
-          </motion.p>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4 pt-4"
-          >
-            <Button asChild size="lg" className="bg-primary hover:bg-secondary text-white shadow-xl h-14 px-8 text-lg rounded-xl">
-              <Link to="/login">
-                Explore Dashboard <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
-            </Button>
-          </motion.div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32">
-          {[
-            {
-              title: "Study Groups",
-              description: "Form or join groups for your classes and collaborate in real-time.",
-              icon: Users,
-              color: "text-blue-500",
-              bg: "bg-blue-500/10"
-            },
-            {
-              title: "AI Summaries",
-              description: "Upload PDFs and instantly get topic breakdowns and flashcards via Groq AI.",
-              icon: BookOpen,
-              color: "text-accent",
-              bg: "bg-accent/10"
-            },
-            {
-              title: "Campus Events",
-              description: "Never miss a club meeting, career fair, or workshop again.",
-              icon: CalendarDays,
-              color: "text-primary",
-              bg: "bg-primary/10"
-            }
-          ].map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="glass-card p-8 rounded-3xl"
-            >
-              <div className={`w-14 h-14 rounded-2xl ${feature.bg} flex items-center justify-center mb-6`}>
-                <feature.icon className={`w-7 h-7 ${feature.color}`} />
+      <main className="w-full flex flex-col items-center pb-32">
+        
+        {/* Hero Section - 80vh so it leaves space at the bottom, but content below is pushed down */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="relative w-full h-[85vh] min-h-[500px] overflow-hidden flex flex-col justify-center"
+        >
+          {/* Illustration Image (Cartoon/Vector) */}
+          <img 
+            src="https://cdn.pixabay.com/photo/2020/07/08/04/12/work-5382501_1280.jpg" 
+            alt="Campus Illustration" 
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* Dark Overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#13273f]/95 via-[#13273f]/80 to-[#13273f]/40" />
+          
+          {/* Hero Content */}
+          <div className="relative z-10 flex flex-col justify-center px-6 md:px-20 max-w-7xl mx-auto w-full pt-16">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-white w-fit mb-6">
+                <Sparkles className="w-3 h-3 text-[#af1c1e]" />
+                <span>Welcome to PU Community Hub</span>
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
-            </motion.div>
-          ))}
+
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.15] mb-6">
+                A Centralized Platform for President University Students.
+              </h1>
+
+              <p className="text-sm md:text-lg text-gray-200 max-w-lg leading-relaxed mb-10">
+                Collaborate with peers, discover campus events, participate in academic discussions, and leverage AI to summarize course materials—all within a single, unified environment.
+              </p>
+
+              <Button size="lg" asChild className="bg-[#af1c1e] hover:bg-[#af1c1e]/90 text-white text-sm md:text-base font-semibold h-14 px-8 rounded-full shadow-lg w-fit transition-transform hover:-translate-y-1">
+                <Link to="/login">
+                  Explore Dashboard <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Section Title - mt-32 pushes it down so it stays below the fold initially */}
+        <div className="mt-32 mb-12 text-center max-w-2xl mx-auto px-4">
+          <span className="text-xs font-bold tracking-widest uppercase text-gray-400 mb-2 block">Services</span>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#13273f]">
+            Empowering Your Academic Journey to Achieve the Extraordinary
+          </h2>
         </div>
+
+        {/* Features Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+          className="grid md:grid-cols-3 gap-6 max-w-[1200px] w-full px-4 md:px-6"
+        >
+          {/* Feature 1 (Light Card) */}
+          <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-start mb-10">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Collaboration</span>
+                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:bg-[#36492e] group-hover:text-white transition-colors">
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-[#13273f] mb-3">Study Groups</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Form or join groups tailored to your classes. Engage in real-time collaboration and share insights.
+              </p>
+            </div>
+            <div className="mt-8 h-32 rounded-xl flex items-center justify-center bg-[#36492e]/10">
+               <Users className="w-16 h-16 text-[#36492e]/40" />
+            </div>
+          </div>
+
+          {/* Feature 2 (Prominent Center Card - Original Brand Navy) */}
+          <div className="bg-[#13273f] p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all group flex flex-col justify-between relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-full -z-0" />
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-10">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300">Artificial Intelligence</span>
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-sm">
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3 leading-tight">AI Summaries & Vision</h3>
+              <p className="text-sm text-gray-300 leading-relaxed font-medium">
+                Upload complex PDFs or lecture materials and instantly receive structured topic breakdowns and flashcards via Groq Vision AI.
+              </p>
+            </div>
+            <div className="mt-8 flex justify-center z-10">
+               <BookOpen className="w-24 h-24 text-white/20" />
+            </div>
+          </div>
+
+          {/* Feature 3 (Light Card) */}
+          <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-start mb-10">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Campus Life</span>
+                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:bg-[#af1c1e] group-hover:text-white transition-colors">
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-[#13273f] mb-3">Campus Events</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Stay informed about essential activities. Never miss a club meeting or academic workshop with our integrated calendar.
+              </p>
+            </div>
+            <div className="mt-8 h-32 rounded-xl flex items-center justify-center bg-[#af1c1e]/10">
+               <CalendarDays className="w-16 h-16 text-[#af1c1e]/40" />
+            </div>
+          </div>
+        </motion.div>
       </main>
     </div>
   );
