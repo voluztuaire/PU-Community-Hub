@@ -132,7 +132,7 @@ Return ONLY valid JSON with keys: "summary", "topics", "faqs"
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": content}
@@ -199,7 +199,7 @@ Return ONLY the translated text without any conversational filler or quotes.
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
             messages=[
                 {"role": "user", "content": prompt}
             ],
@@ -229,7 +229,7 @@ async def ai_chatbot(req: ChatRequest):
             groq_msgs.append({"role": m.role, "content": m.content})
             
         completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
             messages=groq_msgs,
             temperature=0.5,
             max_tokens=1000,
